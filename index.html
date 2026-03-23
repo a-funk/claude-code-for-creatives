@@ -407,6 +407,28 @@
     font-size: 1.5em;
     flex-shrink: 0;
   }
+
+  /* Cheat sheet */
+  .cheat-sheet {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2em 3em;
+    width: min(92%, 900px);
+    text-align: left;
+  }
+
+  .cheat-section h3 {
+    font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+    margin-bottom: 0.4em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid #333;
+  }
+
+  .cheat-row {
+    font-size: clamp(0.75rem, 1.2vw, 1rem);
+    padding: 0.2em 0;
+    line-height: 1.5;
+  }
 </style>
 </head>
 <body>
@@ -562,9 +584,69 @@
         <li>Describe what you need — I'll float around and help</li>
       </ul>
     </div>
-    <p class="dim" style="margin-top: 2em; text-align: center; font-family: var(--mono); font-size: 0.95rem;">
-      artfunk.org &nbsp;&middot;&nbsp; @artfunk
-    </p>
+  </div>
+
+  <!-- SLIDE 9: Cheat Sheet + Best Practices -->
+  <div class="slide" data-slide="8">
+    <h2 style="margin-bottom: 0.4em;">Cheat Sheet</h2>
+    <div class="cheat-sheet" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+      <div class="cheat-section">
+        <h3>Terminal</h3>
+        <div class="cheat-row"><span class="mono accent">pwd</span> <span class="dim">— where am I?</span></div>
+        <div class="cheat-row"><span class="mono accent">ls</span> <span class="dim">— what's here?</span></div>
+        <div class="cheat-row"><span class="mono accent">cd folder</span> <span class="dim">— go into folder</span></div>
+        <div class="cheat-row"><span class="mono accent">mkdir name</span> <span class="dim">— new folder</span></div>
+        <div class="cheat-row"><span class="mono accent">cd ..</span> <span class="dim">— go back up</span></div>
+      </div>
+      <div class="cheat-section">
+        <h3>Git</h3>
+        <div class="cheat-row"><span class="mono accent">git init</span> <span class="dim">— start tracking</span></div>
+        <div class="cheat-row"><span class="mono accent">git add .</span> <span class="dim">— stage changes</span></div>
+        <div class="cheat-row"><span class="mono accent">git commit -m "msg"</span> <span class="dim">— save checkpoint</span></div>
+        <div class="cheat-row"><span class="mono accent">git push</span> <span class="dim">— back up to GitHub</span></div>
+        <div class="cheat-row"><span class="mono accent">git log</span> <span class="dim">— see history</span></div>
+      </div>
+      <div class="cheat-section">
+        <h3>Claude Code</h3>
+        <div class="cheat-row"><span class="mono accent">claude</span> <span class="dim">— start session</span></div>
+        <div class="cheat-row"><span class="mono accent">/init</span> <span class="dim">— set up project</span></div>
+        <div class="cheat-row"><span class="mono accent">/clear</span> <span class="dim">— reset context</span></div>
+        <div class="cheat-row"><span class="mono accent">/help</span> <span class="dim">— all commands</span></div>
+        <div class="cheat-row"><span class="mono accent">/resume</span> <span class="dim">— pick up where you left off</span></div>
+        <div class="cheat-row"><span class="mono accent">Esc</span> <span class="dim">— stop / go back</span></div>
+      </div>
+      <div class="cheat-section">
+        <h3>Prompting</h3>
+        <div class="cheat-row"><span class="accent2">"Build me a..."</span> <span class="dim">— describe the goal</span></div>
+        <div class="cheat-row"><span class="accent2">"Change X to Y"</span> <span class="dim">— be specific</span></div>
+        <div class="cheat-row"><span class="accent2">"Explain this"</span> <span class="dim">— learn as you go</span></div>
+        <div class="cheat-row"><span class="accent2">"Fix this error: ..."</span> <span class="dim">— paste errors</span></div>
+        <div class="cheat-row"><span class="accent2">"Look at how X works"</span> <span class="dim">— explore first</span></div>
+      </div>
+      <div class="cheat-section" style="grid-column: 1 / -1; border-top: 1px solid #333; padding-top: 0.6em; margin-top: 0.2em;">
+        <h3>Best Practices <span class="dim" style="font-weight: 300; font-size: 0.85em;">(from Anthropic's docs)</span></h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.1em 3em;">
+          <div class="cheat-row"><span class="accent">Give context</span> <span class="dim">— "I run a pottery studio and need a way to track inventory"</span></div>
+          <div class="cheat-row"><span class="accent">Start small, then iterate</span> <span class="dim">— get one thing working before adding complexity</span></div>
+          <div class="cheat-row"><span class="accent">Correct, don't restart</span> <span class="dim">— tell Claude what's wrong; it learns from feedback</span></div>
+          <div class="cheat-row"><span class="accent">Give it a way to verify</span> <span class="dim">— "run the tests" or "take a screenshot and check"</span></div>
+          <div class="cheat-row"><span class="accent">Use /clear between tasks</span> <span class="dim">— fresh context = better results</span></div>
+          <div class="cheat-row"><span class="accent">Commit early and often</span> <span class="dim">— git is your undo button; don't be afraid to break things</span></div>
+          <div class="cheat-row"><span class="accent">Explore before building</span> <span class="dim">— ask "how does X work?" before "build me X"</span></div>
+          <div class="cheat-row"><span class="accent">Point to examples</span> <span class="dim">— "follow the pattern in this file" beats a long description</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top: 0.6em; text-align: center; font-size: 0.75rem; line-height: 1.8;">
+      <span class="dim">Sources:</span>
+      <a href="https://code.claude.com/docs/en/best-practices" style="color: var(--accent2); text-decoration: none;">code.claude.com/docs/best-practices</a>
+      <span class="dim">&nbsp;&middot;&nbsp;</span>
+      <a href="https://platform.claude.com/docs/en/docs/build-with-claude/prompt-engineering/claude-prompting-best-practices" style="color: var(--accent2); text-decoration: none;">Anthropic Prompting Guide</a>
+      <span class="dim">&nbsp;&middot;&nbsp;</span>
+      <a href="https://code.claude.com/docs/en/overview" style="color: var(--accent2); text-decoration: none;">Claude Code Docs</a>
+      <br>
+      <span class="dim" style="font-family: var(--mono);">a-funk.github.io/claude-code-for-creatives &nbsp;&middot;&nbsp; artfunk.org</span>
+    </div>
   </div>
 
 </div>
