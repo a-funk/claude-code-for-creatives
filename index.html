@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code for Creatives</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f0f0f;
+    --fg: #e8e4dd;
+    --accent: #B54A3A;
+    --accent2: #D8E1EA;
+    --dim: #6b6660;
+    --terracotta: #B54A3A;
+    --slate: #4A4545;
+    --ice: #D8E1EA;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Inter', -apple-system, sans-serif;
+  }
+
+  .logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 1em;
+  }
+
+  .logo-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: fixed;
+    top: 2vh;
+    left: 3vw;
+    z-index: 100;
+    opacity: 0.6;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* Slide container */
+  .deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6vh 8vw;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Typography */
+  h1 {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1.1;
+    margin-bottom: 0.5em;
+    text-align: center;
+  }
+
+  h2 {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    line-height: 1.2;
+    margin-bottom: 0.6em;
+    text-align: center;
+  }
+
+  h3 {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: clamp(1.2rem, 2vw, 1.8rem);
+    color: var(--accent);
+    margin-bottom: 0.5em;
+  }
+
+  p, li {
+    font-size: clamp(1rem, 1.8vw, 1.5rem);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .subtitle {
+    color: var(--dim);
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    font-weight: 300;
+    text-align: center;
+  }
+
+  .accent { color: var(--accent); }
+  .accent2 { color: var(--accent2); }
+  .dim { color: var(--dim); }
+  .mono { font-family: var(--mono); }
+
+  /* Terminal mockup */
+  .terminal {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    width: min(90%, 750px);
+    margin: 1.5em auto;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .terminal-bar {
+    background: #2a2a2a;
+    padding: 10px 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  .terminal-dot.red { background: var(--terracotta); }
+  .terminal-dot.yellow { background: #febc2e; }
+  .terminal-dot.green { background: var(--ice); }
+
+  .terminal-title {
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    margin-left: 8px;
+  }
+
+  .terminal-body {
+    padding: 1.2em 1.5em;
+    font-family: var(--mono);
+    font-size: clamp(0.8rem, 1.4vw, 1.1rem);
+    line-height: 1.8;
+  }
+
+  .terminal-body .prompt {
+    color: var(--accent2);
+  }
+
+  .terminal-body .cmd {
+    color: var(--fg);
+  }
+
+  .terminal-body .output {
+    color: var(--dim);
+  }
+
+  .terminal-body .highlight {
+    color: var(--accent);
+  }
+
+  /* Wall metaphor */
+  .wall-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 3em;
+    margin: 1.5em 0;
+    height: 280px;
+    position: relative;
+  }
+
+  .wall {
+    width: min(55%, 300px);
+    height: 160px;
+    background: linear-gradient(180deg, #C4574A 0%, #8B3A30 100%);
+    border-radius: 6px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wall::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .wall-label {
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+    z-index: 1;
+  }
+
+  .wall-height {
+    position: absolute;
+    right: -3em;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .wall-height-line {
+    width: 2px;
+    flex: 1;
+    background: var(--accent);
+    min-height: 0;
+  }
+
+  .wall-height-label {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    padding: 4px 0;
+    white-space: nowrap;
+  }
+
+  .person {
+    font-size: 4rem;
+    position: relative;
+    bottom: 0;
+  }
+
+  .person-label {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--dim);
+    margin-top: 0.3em;
+  }
+
+  /* Content layout */
+  .content-left {
+    text-align: left;
+    width: min(90%, 850px);
+  }
+
+  .content-left ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .content-left li {
+    padding: 0.4em 0;
+    padding-left: 1.5em;
+    position: relative;
+  }
+
+  .content-left li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3em;
+    width: min(90%, 900px);
+    text-align: left;
+  }
+
+  .two-col ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .two-col li {
+    padding: 0.3em 0;
+    padding-left: 1.3em;
+    position: relative;
+    font-size: clamp(0.9rem, 1.5vw, 1.25rem);
+  }
+
+  .two-col li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* Big quote */
+  .big-quote {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--accent);
+    text-align: center;
+    max-width: 800px;
+    line-height: 1.4;
+  }
+
+  /* Slide counter */
+  .slide-counter {
+    position: fixed;
+    bottom: 2vh;
+    right: 3vw;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--dim);
+    z-index: 100;
+  }
+
+  /* Progress bar */
+  .progress {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent);
+    transition: width 0.4s ease;
+    z-index: 100;
+  }
+
+  /* Tag line */
+  .tagline {
+    display: inline-block;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.3em 1em;
+    border-radius: 2em;
+    font-family: var(--mono);
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
+    margin-bottom: 1.5em;
+  }
+
+  /* Step list */
+  .steps {
+    list-style: none;
+    padding: 0;
+    counter-reset: step;
+    width: min(90%, 750px);
+    text-align: left;
+  }
+
+  .steps li {
+    counter-increment: step;
+    padding: 0.6em 0 0.6em 2.5em;
+    position: relative;
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+  }
+
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    width: 1.8em;
+    height: 1.8em;
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85em;
+    top: 0.55em;
+  }
+
+  /* Emoji feature grid */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2em 3em;
+    width: min(90%, 800px);
+    text-align: left;
+  }
+
+  .feature-item {
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+  }
+
+  .feature-icon {
+    font-size: 1.5em;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<img src="logo.png" alt="ArtFunk" class="logo-small">
+
+<div class="deck">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide active" data-slide="0">
+    <img src="logo.png" alt="ArtFunk" class="logo">
+    <div class="tagline">The Faight Collective &middot; March 23, 2026</div>
+    <h1>Claude Code<br>for <span class="accent">Creatives</span></h1>
+    <p class="subtitle" style="margin-top: 0.5em;">Create more, administrate less.</p>
+    <p class="subtitle dim" style="margin-top: 1.5em;">Alex Funk &middot; ArtFunk</p>
+  </div>
+
+  <!-- SLIDE 2: The 4 Foot Wall -->
+  <div class="slide" data-slide="1">
+    <h2>The Terminal is a <span class="accent">4 Foot Wall</span></h2>
+    <div class="wall-container">
+      <div style="text-align: center;">
+        <div class="person">🧑‍🎨</div>
+        <div class="person-label">You</div>
+      </div>
+      <div class="wall">
+        <div class="wall-label">THE<br>TERMINAL</div>
+        <div class="wall-height">
+          <div class="wall-height-line"></div>
+          <div class="wall-height-label">4 ft</div>
+          <div class="wall-height-line"></div>
+        </div>
+      </div>
+    </div>
+    <p style="text-align: center; max-width: 700px; margin-top: 0.5em;">
+      You can <span class="accent">see over it</span>. It's not impossible to climb.<br>
+      <span class="dim">It's just unfamiliar enough to feel like a barrier.</span>
+    </p>
+  </div>
+
+  <!-- SLIDE 3: Terminal Basics -->
+  <div class="slide" data-slide="2">
+    <h2>Terminal <span class="accent2">101</span></h2>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot red"></div>
+        <div class="terminal-dot yellow"></div>
+        <div class="terminal-dot green"></div>
+        <div class="terminal-title">Terminal</div>
+      </div>
+      <div class="terminal-body">
+        <div><span class="prompt">~$</span> <span class="cmd">pwd</span></div>
+        <div><span class="output">/Users/you</span> <span class="dim">&larr; where am I?</span></div>
+        <br>
+        <div><span class="prompt">~$</span> <span class="cmd">ls</span></div>
+        <div><span class="output">Desktop Documents Photos Projects</span> <span class="dim">&larr; what's here?</span></div>
+        <br>
+        <div><span class="prompt">~$</span> <span class="cmd">mkdir my-project</span></div>
+        <div><span class="output"></span><span class="dim">&larr; create a new folder</span></div>
+        <br>
+        <div><span class="prompt">~$</span> <span class="cmd">cd my-project</span></div>
+        <div><span class="output"></span><span class="dim">&larr; go into it</span></div>
+        <br>
+        <div><span class="prompt">~/my-project$</span> <span class="cmd">claude</span></div>
+        <div><span class="highlight">✨ That's it. That's the whole wall.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: What is Claude Code -->
+  <div class="slide" data-slide="3">
+    <h2>What is <span class="accent">Claude Code</span>?</h2>
+    <p class="big-quote" style="margin: 1em 0;">
+      "A conversation with an AI that can<br>
+      <span class="accent2">read</span>, <span class="accent2">write</span>, and <span class="accent2">run</span> code for you."
+    </p>
+    <div class="content-left" style="margin-top: 1em;">
+      <ul>
+        <li>Lives in your terminal — no IDE needed</li>
+        <li>You describe what you want in plain English</li>
+        <li>It builds it, explains it, and fixes it</li>
+        <li>You stay in control — approve every change</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: What Creatives Can Build -->
+  <div class="slide" data-slide="4">
+    <h2>What Can <span class="accent">You</span> Build?</h2>
+    <div class="feature-grid" style="margin-top: 1em;">
+      <div class="feature-item"><span class="feature-icon">📦</span> Inventory trackers</div>
+      <div class="feature-item"><span class="feature-icon">📧</span> Email automation</div>
+      <div class="feature-item"><span class="feature-icon">🗓️</span> Scheduling tools</div>
+      <div class="feature-item"><span class="feature-icon">🛒</span> Shopify integrations</div>
+      <div class="feature-item"><span class="feature-icon">📊</span> Sales dashboards</div>
+      <div class="feature-item"><span class="feature-icon">🖼️</span> Portfolio sites</div>
+      <div class="feature-item"><span class="feature-icon">💌</span> Subscriber management</div>
+      <div class="feature-item"><span class="feature-icon">📋</span> Custom admin panels</div>
+    </div>
+    <p class="dim" style="margin-top: 1.5em; text-align: center;">If you can describe it, you can build it.</p>
+  </div>
+
+  <!-- SLIDE 6: The ArtFunk Dashboard -->
+  <div class="slide" data-slide="5">
+    <h2>Demo: The <span class="accent">ArtFunk</span> Dashboard</h2>
+    <div class="two-col" style="margin-top: 1em;">
+      <div>
+        <h3>The Problem</h3>
+        <ul>
+          <li>Print Club subscriptions to manage</li>
+          <li>Monthly emails to send</li>
+          <li>Shopify orders to track</li>
+          <li>Discount codes to generate</li>
+          <li>All of it eating into studio time</li>
+        </ul>
+      </div>
+      <div>
+        <h3>The Solution</h3>
+        <ul>
+          <li>Custom dashboard built with Claude Code</li>
+          <li>Subscriber management in one place</li>
+          <li>Automated email workflows</li>
+          <li>Webhook-driven order processing</li>
+          <li>Built by a non-engineer in weeks</li>
+        </ul>
+      </div>
+    </div>
+    <p class="dim" style="margin-top: 1.5em; text-align: center; font-style: italic;">[Live demo]</p>
+  </div>
+
+  <!-- SLIDE 7: Getting Started -->
+  <div class="slide" data-slide="6">
+    <h2>Let's <span class="accent2">Get Started</span></h2>
+    <ol class="steps" style="margin-top: 1em;">
+      <li>Open your terminal<br><span class="dim" style="font-size: 0.85em;">Mac: Spotlight → "Terminal" &nbsp;|&nbsp; Windows: search "Terminal"</span></li>
+      <li>Install Claude Code<br><span class="mono dim" style="font-size: 0.85em;">npm install -g @anthropic-ai/claude-code</span></li>
+      <li>Navigate to a project folder<br><span class="mono dim" style="font-size: 0.85em;">cd ~/Desktop/my-project</span></li>
+      <li>Type <span class="mono accent">claude</span> and start talking</li>
+      <li>Describe what you want to build — in plain English</li>
+    </ol>
+  </div>
+
+  <!-- SLIDE 8: Workshop / Go -->
+  <div class="slide" data-slide="7">
+    <h2>Your Turn</h2>
+    <p class="big-quote" style="margin: 0.8em 0;">
+      What's the <span class="accent">busywork</span> you'd<br>rather not be doing?
+    </p>
+    <div class="content-left" style="margin-top: 1.2em;">
+      <ul>
+        <li>Pick one problem from your practice</li>
+        <li>Open your terminal and type <span class="mono accent">claude</span></li>
+        <li>Describe what you need — I'll float around and help</li>
+      </ul>
+    </div>
+    <p class="dim" style="margin-top: 2em; text-align: center; font-family: var(--mono); font-size: 0.95rem;">
+      artfunk.org &nbsp;&middot;&nbsp; @artfunk
+    </p>
+  </div>
+
+</div>
+
+<!-- Slide counter -->
+<div class="slide-counter">
+  <span id="current">1</span> / <span id="total">8</span>
+</div>
+
+<!-- Progress bar -->
+<div class="progress" id="progress" style="width: 12.5%;"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    slides[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    document.getElementById('current').textContent = current + 1;
+    document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      goTo(current - 1);
+    } else if (e.key === 'Home') {
+      goTo(0);
+    } else if (e.key === 'End') {
+      goTo(total - 1);
+    }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) {
+      dx < 0 ? goTo(current + 1) : goTo(current - 1);
+    }
+  });
+
+  // Click to advance (left third goes back, rest goes forward)
+  document.addEventListener('click', (e) => {
+    if (e.clientX < window.innerWidth / 3) {
+      goTo(current - 1);
+    } else {
+      goTo(current + 1);
+    }
+  });
+</script>
+
+</body>
+</html>
